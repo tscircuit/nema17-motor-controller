@@ -1,0 +1,6 @@
+node_modules/
+dist/
+checks/
+.tscircuit/
+*.log
+.DS_Store

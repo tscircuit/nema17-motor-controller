@@ -1,0 +1,42 @@
+{
+  "name": "nema17-motor-controller",
+  "version": "0.1.0",
+  "license": "MIT",
+  "description": "RP2040 NEMA 17 motor controller with DRV8825 and configurable USB-PD power",
+  "main": "index.circuit.tsx",
+  "scripts": {
+    "dev": "tsci dev",
+    "build": "tsci build index.circuit.tsx",
+    "build:unrouted": "tsci build index.circuit.tsx --routing-disabled",
+    "typecheck": "tsc --noEmit",
+    "check:netlist": "tsci check netlist index.circuit.tsx",
+    "check:shorts": "tsci check shorts dist/index/circuit.json --mode gerber --layer all"
+  },
+  "dependencies": {
+    "@tscircuit/circuit-json-util": "0.0.128",
+    "@tscircuit/common": "0.0.48",
+    "@tscircuit/props": "0.0.718",
+    "@tscircuit/schematic-trace-solver": "https://jscdn.tscircuit.com/@tscircuit/schematic-trace-solver/0.0.246.tgz",
+    "circuit-json": "0.0.544",
+    "react": "19.2.8",
+    "schematic-symbols": "0.0.250",
+    "tscircuit": "0.0.3102"
+  },
+  "devDependencies": {
+    "@tscircuit/capacity-autorouter": "0.0.1003",
+    "@types/bun": "1.4.1",
+    "@types/react": "19.3.0",
+    "typescript": "5.9.3"
+  },
+  "overrides": {
+    "@tscircuit/core": "0.0.2285",
+    "@tscircuit/checks": "0.0.262",
+    "@tscircuit/circuit-json-util": "0.0.128",
+    "circuit-json": "0.0.544"
+  },
+  "patchedDependencies": {
+    "@tscircuit/core@0.0.2285": "patches/@tscircuit%2Fcore@0.0.2285.patch",
+    "@tscircuit/checks@0.0.262": "patches/@tscircuit%2Fchecks@0.0.262.patch",
+    "@tscircuit/schematic-trace-solver@https://jscdn.tscircuit.com/@tscircuit/schematic-trace-solver/0.0.246.tgz": "patches/@tscircuit%2Fschematic-trace-solver@0.0.246.patch"
+  }
+}
