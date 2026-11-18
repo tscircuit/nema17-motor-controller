@@ -1,0 +1,17 @@
+diff --git a/dist/index.js b/dist/index.js
+index b6ba3d1a5dbf6b9986f9d024a50c4ffbe056d40e..7a758c65d02d1584452127f3321a012762135209 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -621,9 +621,11 @@ function getPourContactTester(circuitJson, connMap) {
+     const netId = connMap.getNetConnectedToId(pour.source_net_id);
+     if (!netId) continue;
+     const pours = pourPolygonsByNetId.get(netId) ?? [];
++    const polygon = getPourPolygon(pour).scale(POLYGON_SCALE, POLYGON_SCALE);
+     pours.push({
+       layer: pour.layer,
+-      polygon: getPourPolygon(pour).scale(POLYGON_SCALE, POLYGON_SCALE)
++      // Flatten's predicates require points and polygons from the same module instance.
++      polygon: polygon instanceof Polygon2 ? polygon : new Polygon2(polygon.toJSON())
+     });
+     pourPolygonsByNetId.set(netId, pours);
+   }

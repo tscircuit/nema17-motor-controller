@@ -1,0 +1,50 @@
+diff --git a/dist/index.js b/dist/index.js
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -3024,6 +3024,7 @@
+ };
+ 
+ // lib/solvers/SchematicTraceLinesSolver/SchematicTraceSingleLineSolver2/SchematicTraceSingleLineSolver2.ts
++var DEFAULT_ELBOW_OVERSHOOT = 0.2;
+ var calculateElbowForPins = ({
+   pin1,
+   pin2,
+@@ -3068,13 +3069,13 @@
+   const defaultElbow = calculateElbowForPins({
+     pin1,
+     pin2,
+-    overshoot: 0.2
++    overshoot: DEFAULT_ELBOW_OVERSHOOT
+   });
+   const routingDistance = Math.abs(pin1.x - pin2.x) + Math.abs(pin1.y - pin2.y);
+   const adaptiveElbow = calculateElbowForPins({
+     pin1,
+     pin2,
+-    overshoot: Math.min(0.2, Math.max(0.02, routingDistance / 4))
++    overshoot: Math.min(DEFAULT_ELBOW_OVERSHOOT, Math.max(0.02, routingDistance / 4))
+   });
+   const adaptiveElbowIsShorter = getPathLength(adaptiveElbow) < getPathLength(defaultElbow);
+   const defaultElbowBacktracks = getPathLength(defaultElbow) > routingDistance + 1e-9;
+@@ -3322,10 +3323,20 @@
+           }
+         }
+         const adjacentEndpointSegIndex = segIndex2 === 1 ? 2 : segIndex2 === lastSegIndex2 - 1 ? lastSegIndex2 - 2 : null;
+-        if (adjacentEndpointSegIndex !== null && adjacentEndpointSegIndex >= 0 && adjacentEndpointSegIndex < lastSegIndex2 && this.isSegmentOutsidePinBand(
++        // Allow the default bridge between nearby connected pins on the same side
++        // of a symbol to cross label padding. Actual text still blocks it.
++        const isSameSidePinBridge =
++          path === this.baseElbow &&
++          path.length === 4 &&
++          segIndex2 === 1 &&
++          PA.chipId === PB.chipId &&
++          directions[0] === directions[1] &&
++          Math.abs(PA.x - PB.x) + Math.abs(PA.y - PB.y) <= DEFAULT_ELBOW_OVERSHOOT + endpointEpsilon &&
++          this.inputProblem.directConnections.some(({ pinIds }) => pinIds.includes(PA.pinId) && pinIds.includes(PB.pinId));
++        if (isSameSidePinBridge || (adjacentEndpointSegIndex !== null && adjacentEndpointSegIndex >= 0 && adjacentEndpointSegIndex < lastSegIndex2 && this.isSegmentOutsidePinBand(
+           path[adjacentEndpointSegIndex],
+           path[adjacentEndpointSegIndex + 1]
+-        )) {
++        ))) {
+           for (const textObstacle of this.endpointTextObstacles) {
+             const textBounds = getTextBoxBounds(textObstacle.textBox);
+             if (!segmentIntersectsRect(segmentStart, segmentEnd, textBounds)) {
