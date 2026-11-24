@@ -49,6 +49,7 @@ export function autoLayoutSections(tree: ReactNode): ReactNode {
 	};
 	
 	function expand(input: ReactNode): ReactNode[] {
+		if (Array.isArray(input)) return input.flatMap(expand);
 		if (!isValidElement(input)) return input == null ? [] : [input];
 		const node = input as ReactElement<any>;
 		if (typeof node.type === "function")
